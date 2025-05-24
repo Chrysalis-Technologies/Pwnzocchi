@@ -20,3 +20,9 @@ potfile.txt
 # ---- OS miscellany ----
 .DS_Store
 Thumbs.db
+
+# ---- build output ----
+ui/obj/
+ui/bin/
+*.cache
+*.dll
