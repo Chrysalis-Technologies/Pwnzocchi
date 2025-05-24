@@ -1,0 +1,22 @@
+# ---- Python artifacts ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.pyd
+
+# ---- Virtual envs ----
+.venv/
+venv/
+ENV/
+
+# ---- Logs / captures ----
+*.log
+captures/
+pcaps/
+potfile.txt
+
+# ---- OS miscellany ----
+.DS_Store
+Thumbs.db
