@@ -3,7 +3,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="Warwalker.UI.MainWindow"
     Width="800" Height="500" Title="Warwalker">
-  <StackPanel>
-    <TextBlock Text="Welcome – UI is alive!" Margin="8"/>
+  <StackPanel Margin="8">
+    <Button Content="Start Scan" Command="{Binding StartScan}" Margin="0,0,0,8"/>
+    <TextBlock Text="{Binding Status}" Margin="0,0,0,8"/>
+    <ListBox Items="{Binding Handshakes}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Ssid}" Width="150"/>
+            <TextBlock Text="{Binding Mac}" Width="150"/>
+            <TextBlock Text="{Binding State}" Width="100"/>
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
   </StackPanel>
 </Window>
+
