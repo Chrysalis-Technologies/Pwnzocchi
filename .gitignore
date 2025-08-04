@@ -21,8 +21,11 @@ potfile.txt
 .DS_Store
 Thumbs.db
 
+# ---- Environment ----
+.env
+
 # ---- build output ----
-ui/obj/
-ui/bin/
+*/obj/
+*/bin/
 *.cache
 *.dll
