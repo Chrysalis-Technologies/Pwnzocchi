@@ -1,34 +1,18 @@
 # ReconX
 
-Production-grade, rule-driven recon orchestrator (authorized use only).
+Production-grade, rule-driven recon orchestrator.
 It wraps your existing `recon_layerN.sh` scripts, consumes their `summary.json`, and drives deeper actions via rules.
-
-## Hard Safety Gates
-1. Fails unless `AUTH_OK=1` is set in the environment.
-2. Requires `--scope scope.json`. Only operates on `targets` with `allowed_tools` within `time_budget_minutes`.
-3. No exploits. Recon/enumeration only. Subprocesses run with timeouts and redacted logs.
-4. Idempotent: re-runs are safe. `_state.sqlite` dedupes tasks by `(tool, args, target)` hash and skip completed work.
 
 ## CLI
 ```bash
 # Plan (dry-run rules to propose deeper actions)
-python -m reconx plan --target 1.2.3.4 --scope examples/scope.json --out ./enum_1.2.3.4_$(date -u +%Y%m%dT%H%M%SZ) --layers 1,2,3,4 --plan auto
+python -m reconx plan --target 1.2.3.4 --out ./enum_1.2.3.4_$(date -u +%Y%m%dT%H%M%SZ) --layers 1,2,3,4 --plan auto
 
-# Run (executes allowed tools, honors budget)
-export AUTH_OK=1
-python -m reconx run --target 1.2.3.4 --scope examples/scope.json --out ./enum_1.2.3.4_$(date -u +%Y%m%dT%H%M%SZ) --layers 1,2,3,4 --max-parallel 2 --timeout 900 --rate 0.2
+# Run
+python -m reconx run --target 1.2.3.4 --out ./enum_1.2.3.4_$(date -u +%Y%m%dT%H%M%SZ) --layers 1,2,3,4 --max-parallel 2 --timeout 900 --rate 0.2
 
 # Resume
-python -m reconx resume --target 1.2.3.4 --scope examples/scope.json --out ./enum_1.2.3.4_... --layers 1,2,3,4
-```
-
-## Scope File
-```json
-{
-  "targets": ["1.2.3.4","app.example.com"],
-  "allowed_tools": ["http_enum","dir_enum","ssh_banner","tls_probe","dns_enum","smb_enum","layer1","layer2","layer3","layer4"],
-  "time_budget_minutes": 60
-}
+python -m reconx resume --target 1.2.3.4 --out ./enum_1.2.3.4_... --layers 1,2,3,4
 ```
 
 ## Summary JSON Schema (emitted by each layer)

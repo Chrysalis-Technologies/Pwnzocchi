@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import List, Set
+from typing import List
 from datetime import datetime, timedelta
 from ..model import SummaryModel, Action, Result
 from ..rules import evaluate_rules
@@ -8,9 +8,9 @@ from ..utils import append_ndjson, append_timeline, utcnow_iso, jdump
 from ..state import init_db, upsert_task, get_pending, set_status
 from ..adapters import run_action
 
-def plan_actions(out_dir: Path, summaries: List[SummaryModel], rules: List[dict], allowed_tools: Set[str]):
+def plan_actions(out_dir: Path, summaries: List[SummaryModel], rules: List[dict]):
     actions = evaluate_rules(rules, summaries)
-    return [a for a in actions if a.tool in allowed_tools]
+    return actions
 
 def run_scheduler(out_dir: Path,
                   planned_actions: List[Action],

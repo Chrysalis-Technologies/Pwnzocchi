@@ -6,8 +6,10 @@ from reconx.model import Action
 def test_scheduler_runs_layer(tmp_path: Path):
     # Create dummy layer1 script
     script = tmp_path / "recon_layer1.sh"
-    script.write_text("#!/usr/bin/env bash\nmkdir -p \"$OUT/layer1\"\n" +
-                      "echo '{\"layer\":1,\"target\":"'$T'\"}' > \"$OUT/layer1/summary.json\"\n")
+    script.write_text('''#!/usr/bin/env bash
+mkdir -p "$OUT/layer1"
+echo '{"layer":1,"target":"'$T'"}' > "$OUT/layer1/summary.json"
+''')
     os.chmod(script, 0o755)
     out_dir = tmp_path / "OUT"
     out_dir.mkdir()
