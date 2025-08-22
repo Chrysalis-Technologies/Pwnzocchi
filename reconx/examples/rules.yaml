@@ -1,0 +1,46 @@
+- match: "evidence[type=='service' and service in ['http','https'] and port in [80,443,8080,8443]]"
+  then:
+    run:
+      - tool: "http_enum"
+        with:
+          url_template: "http{s}://{target}:{port}/"
+          wordlists: ["medium"]
+          tech_fingerprinting: true
+    rationale: "Web service discovered; enumerate endpoints/tech"
+    max_parallel: 2
+- match: "findings[id=='EXPOSED-PATH']"
+  then:
+    run:
+      - tool: "dir_enum"
+        with:
+          base_url: "{path.url}"
+          depth: 2
+    rationale: "Interesting path suggests deeper content discovery"
+- match: "evidence[type=='service' and service=='ssh']"
+  then:
+    run:
+      - tool: "ssh_banner"
+        with:
+          grab_timeout: 5
+    rationale: "Fingerprint SSH to map versions and ciphers"
+- match: "evidence[type=='service' and service in ['dns'] and port in [53]]"
+  then:
+    run:
+      - tool: "dns_enum"
+        with:
+          record_types: ["A","AAAA","MX","TXT","NS"]
+    rationale: "DNS service present; enumerate basic records"
+- match: "evidence[type=='service' and service in ['smb'] and port in [139,445]]"
+  then:
+    run:
+      - tool: "smb_enum"
+        with:
+          list_shares: true
+    rationale: "SMB exposed; list shares and dialects"
+- match: "findings[id=='WEB-TLS-OLD']"
+  then:
+    run:
+      - tool: "tls_probe"
+        with:
+          ciphers: ["DEFAULT@SECLEVEL=1"]
+    rationale: "Weak TLS indicated; confirm protocols/ciphers"

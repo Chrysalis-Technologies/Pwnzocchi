@@ -1,0 +1,28 @@
+{
+  "layer": 1,
+  "target": "1.2.3.4",
+  "evidence": [
+    {
+      "type": "service",
+      "port": 443,
+      "proto": "tcp",
+      "service": "https",
+      "product": "nginx",
+      "version": "1.18"
+    },
+    {
+      "type": "service",
+      "port": 22,
+      "proto": "tcp",
+      "service": "ssh"
+    }
+  ],
+  "findings": [
+    {
+      "id": "WEB-TLS-OLD",
+      "title": "Weak TLS",
+      "severity": "medium"
+    }
+  ],
+  "artifacts": []
+}
