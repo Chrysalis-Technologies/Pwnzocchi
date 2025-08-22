@@ -18,6 +18,9 @@ def start_scanning(interface: str) -> Path:
     data_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = data_dir / f"capture_{timestamp}.pcapng"
+    # airodump-ng expects the output prefix without the extension; ``with_suffix``
+    # safely strips the ``.pcapng`` suffix regardless of path complexity.
+    output_prefix = filename.with_suffix("")
     logger.info("Capturing packets on %s into %s", interface, filename)
     try:
         subprocess.run(
@@ -25,7 +28,7 @@ def start_scanning(interface: str) -> Path:
                 "sudo",
                 "airodump-ng",
                 "-w",
-                str(filename).replace(".pcapng", ""),
+                str(output_prefix),
                 "--output-format",
                 "pcapng",
                 interface,
