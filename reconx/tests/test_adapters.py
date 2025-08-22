@@ -6,8 +6,10 @@ from reconx.model import Action
 def test_layer_adapter(tmp_path: Path):
     # Create a fake layer1 script that writes summary.json
     script = tmp_path / "recon_layer1.sh"
-    script.write_text("#!/usr/bin/env bash\nmkdir -p \"$OUT/layer1\"\n" +
-                      "echo '{\"layer\":1,\"target\":"'$T'\",\"evidence\":[{\"type\":\"service\",\"port\":80,\"service\":\"http\"}]}' > \"$OUT/layer1/summary.json\"\n")
+    script.write_text('''#!/usr/bin/env bash
+mkdir -p "$OUT/layer1"
+echo '{"layer":1,"target":"'$T'","evidence":[{"type":"service","port":80,"service":"http"}]}' > "$OUT/layer1/summary.json"
+''')
     os.chmod(script, 0o755)
     out_dir = tmp_path / "OUT"
     out_dir.mkdir()
