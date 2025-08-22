@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "reconx"
+version = "0.1.0"
+description = "Rule-driven recon orchestrator that uses prior results to drive deeper scans (authorized use only)"
+authors = ["ReconX"]
+readme = "README.md"
+packages = [{ include = "reconx" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+rich = "^13.7.1"
+pydantic = "^2.7.1"
+ruamel.yaml = "^0.18.6"
+sqlalchemy = "^2.0.30"
+jinja2 = "^3.1.4"
+networkx = "^3.2.1"
+lxml = "^5.2.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+
+[tool.poetry.scripts]
+reconx = "reconx.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

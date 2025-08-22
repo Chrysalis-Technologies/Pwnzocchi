@@ -1,0 +1,21 @@
+{
+  "layer": 2,
+  "target": "1.2.3.4",
+  "evidence": [
+    {
+      "type": "service",
+      "port": 53,
+      "proto": "udp",
+      "service": "dns"
+    }
+  ],
+  "findings": [
+    {
+      "id": "EXPOSED-PATH",
+      "title": "Interesting path",
+      "severity": "info",
+      "evidence_ref": "path1"
+    }
+  ],
+  "artifacts": []
+}
