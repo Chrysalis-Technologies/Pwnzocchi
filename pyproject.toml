@@ -5,6 +5,7 @@ description = "Wi-Fi handshake capture utilities"
 requires-python = ">=3.11"
 dependencies = [
     "pydantic>=2.7",
+    "pydantic-settings>=2.2",
 ]
 
 [project.optional-dependencies]
