@@ -74,11 +74,11 @@ def cmd_run(args):
         key = (a.tool, json.dumps(a.args, sort_keys=True), a.target)
         ded[key] = a
     planned = list(ded.values())
-        with (out / 'next_steps.md').open('w', encoding='utf-8') as f:
-            f.write('# Next Steps\n\n')
-            for a in planned:
-                f.write(f"- [{a.priority}] {a.tool} on {a.target} with {a.args}\n")
-        
+    with (out / 'next_steps.md').open('w', encoding='utf-8') as f:
+        f.write('# Next Steps\n\n')
+        for a in planned:
+            f.write(f"- [{a.priority}] {a.tool} on {a.target} with {a.args}\n")
+
     run_scheduler(out, planned, time_budget_minutes=int(args.time_budget or 0) or budget,
                   max_parallel=int(args.max_parallel or 1),
                   timeout_per_task=int(args.timeout or 600),
