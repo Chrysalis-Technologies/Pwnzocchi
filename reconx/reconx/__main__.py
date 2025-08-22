@@ -45,6 +45,7 @@ def cmd_run(args):
             f.write(f"- [{a.priority}] {a.tool} on {a.target} with {a.args}\n")
 
     run_scheduler(out, planned, time_budget_minutes=int(args.time_budget or 60),
+
                   max_parallel=int(args.max_parallel or 1),
                   timeout_per_task=int(args.timeout or 600),
                   rate_per_sec=float(args.rate or 0.0))

@@ -15,6 +15,15 @@ python -m reconx run --target 1.2.3.4 --out ./enum_1.2.3.4_$(date -u +%Y%m%dT%H%
 python -m reconx resume --target 1.2.3.4 --out ./enum_1.2.3.4_... --layers 1,2,3,4
 ```
 
+## Built-in Tools
+
+ReconX ships with several lightweight adapters to kickstart common recon tasks:
+
+- `http_enum` – retrieve basic HTTP headers for a target URL.
+- `ssh_banner` – grab SSH server banners to identify versions.
+- `dns_enum` – query common DNS record types such as `A`, `AAAA`, `MX`, `TXT` and `NS`.
+- `tls_probe` – connect with OpenSSL to collect certificate metadata.
+
 ## Summary JSON Schema (emitted by each layer)
 ```json
 {
@@ -46,6 +55,20 @@ YAML rule format (see `examples/rules.yaml`):
           tech_fingerprinting: true
     rationale: "Web service discovered; enumerate endpoints/tech"
     max_parallel: 2
+- match: "evidence[type=='service' and service=='dns']"
+  then:
+    run:
+      - tool: "dns_enum"
+        with:
+          record_types: ["A","AAAA","MX","TXT","NS"]
+    rationale: "DNS service present; enumerate basic records"
+- match: "evidence[type=='service' and service in ['http','https']]"
+  then:
+    run:
+      - tool: "tls_probe"
+        with:
+          port: "{port}"
+    rationale: "Inspect TLS configuration and certificate details"
 ```
 
 ## Outputs

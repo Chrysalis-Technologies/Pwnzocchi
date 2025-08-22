@@ -3,6 +3,7 @@ import os, json
 from reconx.scheduler import run_scheduler
 from reconx.model import Action
 
+
 def test_scheduler_runs_layer(tmp_path: Path):
     # Create dummy layer1 script
     script = tmp_path / "recon_layer1.sh"
@@ -10,6 +11,7 @@ def test_scheduler_runs_layer(tmp_path: Path):
 mkdir -p "$OUT/layer1"
 echo '{"layer":1,"target":"'$T'"}' > "$OUT/layer1/summary.json"
 ''')
+
     os.chmod(script, 0o755)
     out_dir = tmp_path / "OUT"
     out_dir.mkdir()
@@ -25,3 +27,4 @@ echo '{"layer":1,"target":"'$T'"}' > "$OUT/layer1/summary.json"
         assert comb
     finally:
         os.chdir(cwd)
+

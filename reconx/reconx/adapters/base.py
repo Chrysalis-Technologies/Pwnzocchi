@@ -65,11 +65,65 @@ def ssh_banner(action: Action, out_dir: Path, timeout: int) -> Result:
     summary = SummaryModel(layer=98, target=target, evidence=ev, findings=[], artifacts=[])
     return Result(summary=summary, artifacts=[], logs=str(log_path))
 
+def dns_enum(action: Action, out_dir: Path, timeout: int) -> Result:
+    target = action.target
+    record_types = action.args.get("record_types", ["A", "AAAA", "MX", "TXT", "NS"])
+    layer_dir = out_dir / "layer_dns"
+    layer_dir.mkdir(parents=True, exist_ok=True)
+    log_path = layer_dir / "dns_enum.log.txt"
+    try:
+        cmd = [
+            "bash",
+            "-lc",
+            f"for t in {' '.join(record_types)}; do nslookup -type=$t {shlex.quote(target)}; done",
+        ]
+        code, out, err = safe_run(cmd, timeout=min(timeout, 60))
+        log_path.write_text((out or "") + "\n" + (err or ""), encoding="utf-8")
+    except Exception as ex:
+        log_path.write_text(str(ex), encoding="utf-8")
+    ev = []
+    if 'out' in locals() and target in (out or ""):
+        ev.append(Evidence(type="dns-record", name=target))
+    summary = SummaryModel(layer=96, target=target, evidence=ev, findings=[], artifacts=[])
+    return Result(summary=summary, artifacts=[], logs=str(log_path))
+
+def tls_probe(action: Action, out_dir: Path, timeout: int) -> Result:
+    target = action.target
+    port = int(action.args.get("port", 443))
+    layer_dir = out_dir / "layer_tls"
+    layer_dir.mkdir(parents=True, exist_ok=True)
+    log_path = layer_dir / "tls_probe.log.txt"
+    try:
+        cmd = [
+            "bash",
+            "-lc",
+            f"echo | timeout 10 openssl s_client -servername {shlex.quote(target)} -connect {shlex.quote(target)}:{port} 2>&1 | head -n 20",
+        ]
+        code, out, err = safe_run(cmd, timeout=min(timeout, 40))
+        log_path.write_text((out or "") + "\n" + (err or ""), encoding="utf-8")
+    except Exception as ex:
+        log_path.write_text(str(ex), encoding="utf-8")
+    ev = []
+    subj = None
+    issuer = None
+    for line in (out or "").splitlines():
+        line = line.strip()
+        if line.startswith("subject="):
+            subj = line.split("subject=")[-1].strip()
+        elif line.startswith("issuer="):
+            issuer = line.split("issuer=")[-1].strip()
+    if subj or issuer:
+        ev.append(Evidence(type="tls-cert", service="https", port=port, proto="tcp", name=subj, product=issuer))
+    summary = SummaryModel(layer=95, target=target, evidence=ev, findings=[], artifacts=[])
+    return Result(summary=summary, artifacts=[], logs=str(log_path))
+
 HANDLERS: Dict[str, Callable[[Action, Path, int], Result]] = {}
 
 def _register_builtin_handlers():
     HANDLERS["http_enum"] = http_enum
     HANDLERS["ssh_banner"] = ssh_banner
+    HANDLERS["dns_enum"] = dns_enum
+    HANDLERS["tls_probe"] = tls_probe
 
 def run_action(action: Action, out_dir: Path, timeout: int) -> Result:
     if not HANDLERS:
