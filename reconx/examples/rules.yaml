@@ -23,7 +23,7 @@
         with:
           grab_timeout: 5
     rationale: "Fingerprint SSH to map versions and ciphers"
-- match: "evidence[type=='service' and service in ['dns'] and port in [53]]"
+- match: "evidence[type=='service' and service=='dns']"
   then:
     run:
       - tool: "dns_enum"
@@ -37,10 +37,10 @@
         with:
           list_shares: true
     rationale: "SMB exposed; list shares and dialects"
-- match: "findings[id=='WEB-TLS-OLD']"
+- match: "evidence[type=='service' and service in ['http','https']]"
   then:
     run:
       - tool: "tls_probe"
         with:
-          ciphers: ["DEFAULT@SECLEVEL=1"]
-    rationale: "Weak TLS indicated; confirm protocols/ciphers"
+          port: "{port}"
+    rationale: "Inspect TLS configuration and certificate details"
