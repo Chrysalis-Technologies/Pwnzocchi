@@ -1,16 +1,38 @@
-# scanner.py - Captures Wi-Fi handshakes
+"""Module responsible for capturing Wi-Fi handshakes."""
 
-import os
+import logging
 import subprocess
 from datetime import datetime
-from dotenv import load_dotenv
+from pathlib import Path
+from subprocess import CalledProcessError
 
-def start_scanning(interface):
-    load_dotenv()
-    data_dir = os.getenv("DATA_DIR", "./captures")
-    os.makedirs(data_dir, exist_ok=True)
+from .config import get_settings
+
+logger = logging.getLogger(__name__)
+
+
+def start_scanning(interface: str) -> Path:
+    """Start packet capture on ``interface`` and return output file path."""
+    settings = get_settings()
+    data_dir = Path(settings.data_dir)
+    data_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{data_dir}/capture_{timestamp}.pcapng"
-
-    print(f"Capturing packets on {interface} into {filename}...")
-    subprocess.run(["sudo", "airodump-ng", "-w", filename.replace(".pcapng", ""), "--output-format", "pcapng", interface])
+    filename = data_dir / f"capture_{timestamp}.pcapng"
+    logger.info("Capturing packets on %s into %s", interface, filename)
+    try:
+        subprocess.run(
+            [
+                "sudo",
+                "airodump-ng",
+                "-w",
+                str(filename).replace(".pcapng", ""),
+                "--output-format",
+                "pcapng",
+                interface,
+            ],
+            check=True,
+        )
+    except CalledProcessError as exc:
+        logger.error("airodump-ng failed: %s", exc)
+        raise
+    return filename
